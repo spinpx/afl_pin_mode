@@ -1,0 +1,8 @@
+pin*
+crash
+forkserver.so
+obj-intel64/
+simulate
+test
+mini
+afl-2.51b/
