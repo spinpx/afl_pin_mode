@@ -4,7 +4,7 @@
 - Just run `make`
 
 ## Usage
-`` 
+`afl-fuzz -m 500 -i .. -o .. -f .. -- /path/to/pin_run TARGETAPP @@` 
 
 ## Test
 - Ubuntu 14.04

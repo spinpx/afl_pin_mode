@@ -15,7 +15,6 @@ PIN_ROOT=${CUR_DIR}/${PIN_NAME}
 PIN_BIN=${PIN_ROOT}/pin
 TOOL_NAME=tool.so
 PIN_TOOL=${CUR_DIR}/${PIN_OBJ_DIR}/${TOOL_NAME}
-PIN_TOOL_PREFIX= ${PIN_BIN} -t ${PIN_TOOL} --
 
 define newline
 
@@ -67,15 +66,18 @@ mini_app: mini.c
 pin_run: pin_run.cpp
 	$(CXX) -O3 -std=c++11 -o pin_run pin_run.cpp
 
+pin_tool:
+	PIN_ROOT=${PIN_ROOT} make -f makefile.pin
+
 pin_test: test_app crash_app forkserver simulate
-	USING_PIN=1 ./simulate ${PIN_TOOL_PREFIX} ./test
+	USING_PIN=1 ./simulate ./pin_run ./test
 
 no_pin_test: test_app crash_app forkserver simulate
 	./simulate ./test
 
-pin_tool:
-	PIN_ROOT=${PIN_ROOT} make -f makefile.pin
-
+afl_test:
+	./afl-2.51b/afl-fuzz -m 1000 -i inputs -o outputs -- ./pin_run ./mini @@
+	
 test: test_app crash_app forkserver simulate
 	@echo "-----------------------------------------------------------------------"
 	@echo "test without simulating..."
