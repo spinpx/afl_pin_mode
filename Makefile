@@ -36,11 +36,12 @@ PIN_CONFIG_FILE="${CUR_DIR}/pin_config.h"
 all: check test_app crash_app forkserver simulate pin_tool mini pin_run
 
 check: | ${PIN_ROOT}
-	@echo ${PIN_CONFIG_STR} > ${PIN_CONFIG_FILE}
+
 ${PIN_ROOT}:
 	@echo "install pin ...."
 	@wget ${PIN_URL}
 	@tar -xf ${PIN_TAR}
+	@echo ${PIN_CONFIG_STR} > ${PIN_CONFIG_FILE}
   # write pin config file.
 
 install_afl:
@@ -77,7 +78,7 @@ no_pin_test: test_app crash_app forkserver simulate
 
 afl_test:
 	./afl-2.51b/afl-fuzz -m 1000 -i inputs -o outputs -- ./pin_run ./mini @@
-	
+
 test: test_app crash_app forkserver simulate
 	@echo "-----------------------------------------------------------------------"
 	@echo "test without simulating..."
