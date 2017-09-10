@@ -78,38 +78,6 @@ endif
 
 ###### Place OS-specific definitions here ######
 
-# Android
-ifeq ($(TARGET_OS),android)
-    TEST_TOOL_ROOTS +=
-    TEST_ROOTS +=
-    TOOL_ROOTS +=
-    SA_TOOL_ROOTS +=
-    APP_ROOTS +=
-    OBJECT_ROOTS +=
-    DLL_ROOTS +=
-    LIB_ROOTS +=
-    ifeq ($(TARGET),ia32)
-        TEST_TOOL_ROOTS +=
-        TEST_ROOTS +=
-        TOOL_ROOTS +=
-        SA_TOOL_ROOTS +=
-        APP_ROOTS +=
-        OBJECT_ROOTS +=
-        DLL_ROOTS +=
-        LIB_ROOTS +=
-    endif
-    ifeq ($(TARGET),intel64)
-        TEST_TOOL_ROOTS +=
-        TEST_ROOTS +=
-        TOOL_ROOTS +=
-        SA_TOOL_ROOTS +=
-        APP_ROOTS +=
-        OBJECT_ROOTS +=
-        DLL_ROOTS +=
-        LIB_ROOTS +=
-    endif
-endif
-
 # Linux
 ifeq ($(TARGET_OS),linux)
     TEST_TOOL_ROOTS +=
@@ -242,8 +210,6 @@ SANITY_SUBSET := $(TEST_TOOL_ROOTS) $(TEST_ROOTS)
 ###### Special tools' build rules ######
 
 # placeholder for special tools' build rules
-TOOL_CXXFLAGS+=-std=c++11
-
 
 ###### Special applications' build rules ######
 

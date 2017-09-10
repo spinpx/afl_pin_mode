@@ -103,7 +103,7 @@ VOID ImageLoad(IMG img, VOID *v) {
 void SetupShm() {
 
   if (char *shm_id_str = getenv(SHM_ENV_VAR)) {
-    int shm_id = std::atoi(shm_id_str);
+    int shm_id = atoi(shm_id_str);
     // std::cerr << "shm_id: " << shm_id << std::endl;
     path_shm = reinterpret_cast<u8 *>(shmat(shm_id, NULL, 0));
     if (path_shm == reinterpret_cast<void *>(-1)) {
