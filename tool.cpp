@@ -7,7 +7,8 @@
 #include <sys/shm.h>
 #include <time.h>
 
-# define ADDR_PREFIX(_addr) ((_addr << 1) % MAP_SIZE)
+#define ADDR_PREFIX(_addr) ((_addr << 1) % MAP_SIZE)
+#define ADDR_GET(_addr) (_addr % MAP_SIZE)
 
 u8 branch_map[MAP_SIZE];
 u8 *path_shm = branch_map;
@@ -17,7 +18,8 @@ static ADDRINT fork_func = 0;
 RTN fork_point;
 
 // PIN_FAST_ANALYSIS_CALL
-VOID TrackBranch(u32 prefix, bool taken) { path_shm[(prefix) | (u32)taken]++; }
+VOID TrackCondBranch(u32 prefix, bool taken) { path_shm[(prefix) | (u32)taken]++; }
+VOID TrackIndBranch(u32 addr) { path_shm[addr]++; }
 
 // In this function, we call the "AFLStartForkServer" fucntion in
 // forkserver.so
@@ -46,14 +48,19 @@ VOID ImageLoad(IMG img, VOID *v) {
             // * Branch-based:
             // Entry id: ( branch address[n-1 bits] | taken[1 bit] )
             // DirectBranch is fixed, so we must ensure they are conditional,
-            // While IndirectBranch is not fixed, it will change.
-            if (INS_Category(ins) == XED_CATEGORY_COND_BR ||
-                INS_IsIndirectBranchOrCall(ins)) {
+            // While IndirectBranch is not fixed, the target address will change.
+            if (INS_Category(ins) == XED_CATEGORY_COND_BR) {
 
               ADDRINT addr = INS_Address(ins);
               u32 prefix = ADDR_PREFIX(addr);
-              INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)TrackBranch,
+              INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)TrackCondBranch,
                              IARG_UINT32, prefix, IARG_BRANCH_TAKEN, IARG_END);
+            } else if (INS_IsIndirectBranchOrCall(ins)) {
+                
+              u32 addr = ADDR_GET(INS_Address(ins));
+              INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)TrackIndBranch,
+                             IARG_UINT32, addr, IARG_END);
+
             }
           }
 

@@ -4,7 +4,7 @@ afl_pin_mode is a instrumentation tool for AFL. It is inspired by [aflpin](https
 
 ## Features
 - Support forkserver
-- Not need to modify AFL code
+- Needn't modifying AFL code
 
 ## Install
 - Just run `make`
@@ -17,7 +17,7 @@ afl_pin_mode is a instrumentation tool for AFL. It is inspired by [aflpin](https
 - Pin 2.14
 
 ## ISSUES
-- Though I make the tool support forkserver feature, but it is still slow.
+- Though I make the tool support forkserver feature, it is still slow.
 
 ## TODO
 - Test Pin 3.4 and Ubuntu 16.04/17.04
