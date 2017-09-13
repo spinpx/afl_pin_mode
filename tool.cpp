@@ -19,7 +19,7 @@ RTN fork_point;
 
 // PIN_FAST_ANALYSIS_CALL
 VOID TrackCondBranch(u32 prefix, bool taken) { path_shm[(prefix) | (u32)taken]++; }
-VOID TrackIndBranch(u32 addr) { path_shm[addr]++; }
+VOID TrackIndBranch(u32 from, u32 to) { path_shm[from ^ to]++; }
 
 // In this function, we call the "AFLStartForkServer" fucntion in
 // forkserver.so
@@ -48,18 +48,24 @@ VOID ImageLoad(IMG img, VOID *v) {
             // * Branch-based:
             // Entry id: ( branch address[n-1 bits] | taken[1 bit] )
             // DirectBranch is fixed, so we must ensure they are conditional,
-            // While IndirectBranch is not fixed, the target address will change.
             if (INS_Category(ins) == XED_CATEGORY_COND_BR) {
 
               ADDRINT addr = INS_Address(ins);
               u32 prefix = ADDR_PREFIX(addr);
               INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)TrackCondBranch,
                              IARG_UINT32, prefix, IARG_BRANCH_TAKEN, IARG_END);
-            } else if (INS_IsIndirectBranchOrCall(ins)) {
+            }
+            // While IndirectBranch is not fixed, the target address will change.
+            // We should consider both from and to addresses.
+            // Including: Ret, Call
+            else if (INS_IsIndirectBranchOrCall(ins)) {
                 
-              u32 addr = ADDR_GET(INS_Address(ins));
+              u32 from_addr = ADDR_PREFIX(INS_Address(ins));
+              // ret or call?
+              // FIXME: is ret has inst_ptr?
               INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)TrackIndBranch,
-                             IARG_UINT32, addr, IARG_END);
+                             IARG_UINT32, from_addr,
+                             IARG_INST_PTR, IARG_END);
 
             }
           }
