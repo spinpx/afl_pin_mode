@@ -90,13 +90,7 @@ void run() {
     return;
   }
 
-  fprintf(stderr, "status is : %d \n", status);
-
-
-  // break the loop
-  if ((res = write(fsrv_ctl_fd, &sth, 2)) != 2) {
-    fprintf(stderr, "fail to break loop\n");
-  }
+  //fprintf(stderr, "status is : %d \n", status);
 
 }
 
@@ -104,6 +98,17 @@ int main (int argc, char** argv) {
   if (argc < 2) {
     return 0;
   }
+
   init_forkserver(&argv[1]);
-  run();
+
+  for (int i = 0; i < 10; i++) {
+    run();
+  }
+
+  int sth = 0;
+  // break the loop
+  if (write(fsrv_ctl_fd, &sth, 2) != 2) {
+    fprintf(stderr, "fail to break loop\n");
+  }
+
 }

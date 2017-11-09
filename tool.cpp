@@ -18,7 +18,9 @@ static ADDRINT fork_func = 0;
 RTN fork_point;
 
 // PIN_FAST_ANALYSIS_CALL
-VOID TrackCondBranch(u32 prefix, bool taken) { path_shm[(prefix) | (u32)taken]++; }
+VOID TrackCondBranch(u32 prefix, bool taken) {
+  path_shm[(prefix) | (u32)taken]++;
+}
 VOID TrackIndBranch(u32 from, u32 to) { path_shm[from ^ to]++; }
 
 // In this function, we call the "AFLStartForkServer" fucntion in
@@ -55,18 +57,17 @@ VOID ImageLoad(IMG img, VOID *v) {
               INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)TrackCondBranch,
                              IARG_UINT32, prefix, IARG_BRANCH_TAKEN, IARG_END);
             }
-            // While IndirectBranch is not fixed, the target address will change.
+            // While IndirectBranch is not fixed, the target address will
+            // change.
             // We should consider both from and to addresses.
             // Including: Ret, Call
             else if (INS_IsIndirectBranchOrCall(ins)) {
-                
+
               u32 from_addr = ADDR_PREFIX(INS_Address(ins));
               // ret or call?
               // FIXME: is ret has inst_ptr?
               INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)TrackIndBranch,
-                             IARG_UINT32, from_addr,
-                             IARG_INST_PTR, IARG_END);
-
+                             IARG_UINT32, from_addr, IARG_INST_PTR, IARG_END);
             }
           }
 
@@ -124,10 +125,6 @@ void SetupShm() {
       _exit(1);
     }
   }
-}
-
-VOID Fini(INT32 code, VOID *v) {
-  // std::cout << "FiniFunc: " << ":" <<  TIME_SPAN << std::endl;
 }
 
 int main(int argc, char *argv[]) {

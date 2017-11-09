@@ -2,17 +2,19 @@
 extern "C" int mytest() {
   printf("123\n");
 }
+
 int main() {
   int sum = 0;
-  // for (int i = 0; i < 10000; i++) {
 
   //   for ( int j = 0; j < 10000; j++) {
-  //     sum += i*j;
+  //     sum += (i%12300)*(j%5555);
   //     sum = sum%1025;
   //   }
 
   // }
 
-  //printf("sum %d\n", sum);
-  return 0;
+  // for (int i = 0; i < 1000; i++) {
+  //   printf("sum %d\n", sum + i);
+  // }
+  return sum%256;
 }
